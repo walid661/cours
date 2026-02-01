@@ -5,27 +5,37 @@ import {
   BookOpen, 
   FileText, 
   Search,
-  ArrowLeft
+  ArrowLeft,
+  MessageSquare,
+  ClipboardList
 } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import WelcomeCard from './components/WelcomeCard';
 import ProgressCard from './components/ProgressCard';
 import TaskBoard from './components/TaskBoard';
 import DocumentList from './components/DocumentList';
-import { MOCK_STUDENT, MOCK_TASKS, MOCK_DOCUMENTS, MOCK_SUBJECTS } from './constants';
-import { Document } from './types';
+import SessionReportList from './components/SessionReportList';
+import SessionReportDetail from './components/SessionReportDetail';
+import { MOCK_STUDENT, MOCK_TASKS, MOCK_DOCUMENTS, MOCK_SUBJECTS, MOCK_REPORTS } from './constants';
+import { Document, SessionReport } from './types';
 
-type View = 'dashboard' | 'courses' | 'documents' | 'doc-detail';
+type View = 'dashboard' | 'courses' | 'documents' | 'doc-detail' | 'reports' | 'report-detail';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
+  const [selectedReport, setSelectedReport] = useState<SessionReport | null>(null);
 
   const navigateTo = (view: View) => setCurrentView(view);
 
   const handleDocClick = (doc: Document) => {
     setSelectedDoc(doc);
     setCurrentView('doc-detail');
+  };
+
+  const handleReportClick = (report: SessionReport) => {
+    setSelectedReport(report);
+    setCurrentView('report-detail');
   };
 
   const renderContent = () => {
@@ -55,11 +65,20 @@ const App: React.FC = () => {
 
             <div className="space-y-8">
               <TaskBoard tasks={MOCK_TASKS} />
-              <div className="bg-orange-100 p-6 rounded-[24px] paper-border border-orange-200">
-                <h4 className="font-bold text-orange-800 mb-2">💡 Astuce du prof</h4>
-                <p className="text-sm text-orange-700 leading-relaxed">
-                  "N'oublie pas de relire ton cours de SVT avant demain. On fera un petit quiz ludique !"
+              <div 
+                onClick={() => navigateTo('reports')}
+                className="bg-emerald-50 p-6 rounded-[24px] paper-border border-emerald-200 cursor-pointer hover:bg-emerald-100 transition-colors group"
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-bold text-emerald-800">Dernier compte rendu</h4>
+                  <span className="bg-emerald-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">NOUVEAU</span>
+                </div>
+                <p className="text-sm text-emerald-700 leading-relaxed mb-4 italic">
+                  "Léa a très bien compris le concept de simplification des fractions..."
                 </p>
+                <span className="text-emerald-800 text-xs font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                  Tout lire <ArrowLeft size={14} className="rotate-180" />
+                </span>
               </div>
             </div>
           </div>
@@ -68,7 +87,7 @@ const App: React.FC = () => {
       case 'courses':
         return (
           <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-            <button onClick={() => navigateTo('dashboard')} className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold mb-6">
+            <button onClick={() => navigateTo('dashboard')} className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold mb-6 transition-all">
               <ArrowLeft size={20} /> Retour au tableau de bord
             </button>
             <h2 className="text-3xl font-bold mb-8">Mes Cours</h2>
@@ -90,7 +109,7 @@ const App: React.FC = () => {
       case 'documents':
         return (
           <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-            <button onClick={() => navigateTo('dashboard')} className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold mb-6">
+            <button onClick={() => navigateTo('dashboard')} className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold mb-6 transition-all">
               <ArrowLeft size={20} /> Retour
             </button>
             <h2 className="text-3xl font-bold mb-8">Tous mes Documents</h2>
@@ -101,7 +120,7 @@ const App: React.FC = () => {
       case 'doc-detail':
         return (
           <div className="animate-in fade-in zoom-in-95 duration-300 max-w-4xl mx-auto">
-            <button onClick={() => navigateTo('documents')} className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold mb-6">
+            <button onClick={() => navigateTo('documents')} className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold mb-6 transition-all">
               <ArrowLeft size={20} /> Retour aux documents
             </button>
             <div className="bg-white p-10 rounded-[32px] paper-border min-h-[600px] flex flex-col items-center justify-center text-center">
@@ -119,6 +138,32 @@ const App: React.FC = () => {
                 Télécharger le document
               </button>
             </div>
+          </div>
+        );
+
+      case 'reports':
+        return (
+          <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+            <button onClick={() => navigateTo('dashboard')} className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold mb-6 transition-all">
+              <ArrowLeft size={20} /> Retour
+            </button>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold">Comptes Rendus de séances</h2>
+              <div className="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-bold text-sm">
+                {MOCK_REPORTS.length} séances au total
+              </div>
+            </div>
+            <SessionReportList reports={MOCK_REPORTS} onReportClick={handleReportClick} />
+          </div>
+        );
+
+      case 'report-detail':
+        return (
+          <div className="animate-in fade-in zoom-in-95 duration-300 max-w-3xl mx-auto">
+            <button onClick={() => navigateTo('reports')} className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold mb-6 transition-all">
+              <ArrowLeft size={20} /> Retour aux comptes rendus
+            </button>
+            {selectedReport && <SessionReportDetail report={selectedReport} />}
           </div>
         );
     }

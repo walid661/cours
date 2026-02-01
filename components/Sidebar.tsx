@@ -4,8 +4,11 @@ import {
   LayoutDashboard, 
   BookOpen, 
   FileText, 
-  GraduationCap
+  GraduationCap,
+  MessageSquare
 } from 'lucide-react';
+// Fix: Added import for MOCK_STUDENT from constants file
+import { MOCK_STUDENT } from '../constants';
 
 interface SidebarProps {
   currentView: string;
@@ -50,6 +53,12 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
           onClick={() => onNavigate('courses')}
         />
         <NavItem 
+          icon={<MessageSquare size={20} />} 
+          label="Comptes Rendus" 
+          active={currentView === 'reports' || currentView === 'report-detail'} 
+          onClick={() => onNavigate('reports')}
+        />
+        <NavItem 
           icon={<FileText size={20} />} 
           label="Documents" 
           active={currentView === 'documents' || currentView === 'doc-detail'} 
@@ -60,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
       <div className="mt-auto hidden lg:block">
         <div className="bg-slate-50 p-4 rounded-2xl paper-border border-dashed border-slate-200">
           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Session active</p>
-          <p className="text-slate-800 text-xs font-bold">Léa • 6ème B</p>
+          <p className="text-slate-800 text-xs font-bold">{MOCK_STUDENT.name} • {MOCK_STUDENT.grade}</p>
         </div>
       </div>
     </aside>

@@ -28,3 +28,13 @@ export interface SubjectProgress {
   progress: number;
   color: string;
 }
+
+export interface SessionReport {
+  id: string;
+  date: string;
+  subject: string;
+  summary: string;
+  fullFeedback: string;
+  nextGoals: string[];
+  isNew?: boolean;
+}
